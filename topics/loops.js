@@ -1,4 +1,4 @@
-// LOOPS — repeat an action N times. Set the loop count to make exactly enough.
+// LOOPS — a loop repeats an action. Fill every jar by repeating the right number of times.
 (function () {
   var FL = window.FunLab;
 
@@ -9,12 +9,12 @@
 
     tutorial: function (root, ctx) {
       FL.stepper(root, ctx, [
-        { emoji: "🔁", title: { en: "Doing it again", zh: "再做一次" },
-          body: { en: "Need 5 cookies? Don't write 🍪 five times. Say <b>repeat 5 times</b> { 🍪 }. That's a <b>loop</b>.", zh: "想要 5 塊餅乾？別寫五次 🍪。說 <b>重複 5 次</b>｛ 🍪 ｝，這就是<b>迴圈</b>。" } },
-        { emoji: "🔢", title: { en: "The count", zh: "次數" },
-          body: { en: "The number tells the loop <b>how many times</b> to run. Change the number, change how much you get.", zh: "那個數字告訴迴圈要跑<b>幾次</b>。改數字，做出來的數量就不同。" } },
-        { emoji: "🍪", title: { en: "Bake exactly enough", zh: "剛好烤夠" },
-          body: { en: "Set the loop count to bake <b>exactly</b> the number asked for. Three stages!", zh: "設定迴圈次數，<b>剛好</b>烤出要求的數量。三個關卡！" } }
+        { emoji: "🔁", title: { en: "Do it again, and again", zh: "一次又一次" },
+          body: { en: "A <b>loop</b> repeats an action. <b>repeat 3 times { 🍪 }</b> bakes 🍪 🍪 🍪 — three cookies, from one short line.", zh: "<b>迴圈</b>會重複一個動作。<b>重複 3 次 { 🍪 }</b> 會做出 🍪 🍪 🍪 —— 一行就做三個。" } },
+        { emoji: "🔢", title: { en: "Count the jars", zh: "數一數罐子" },
+          body: { en: "See the empty jars? <b>Count them.</b> Set the loop to repeat <b>that many</b> times to fill every one — no more, no less.", zh: "看到空罐子了嗎？<b>數一數</b>。把迴圈設成重複<b>那麼多</b>次，剛好把每個裝滿 —— 不多也不少。" } },
+        { emoji: "✅", title: { en: "One number, lots of work", zh: "一個數字，很多工作" },
+          body: { en: "That's the magic of a loop: change <b>one number</b> and you do the job 3, 8, or 100 times. Try three jar sets!", zh: "這就是迴圈的魔法：改<b>一個數字</b>，就能做 3 次、8 次、甚至 100 次。試試三組罐子！" } }
       ]);
     },
 
@@ -27,41 +27,48 @@
   });
 
   function stage(root, ctx, target, emoji, done) {
-    var k = 1;
+    var n = 1;
     var card = ctx.el("div", { class: "card center" });
-    var tray = ctx.el("div", { class: "bubble", style: { fontSize: "1.8rem", minHeight: "2.4rem", display: "block" } });
     root.appendChild(card);
 
-    function redraw() {
+    function slotRow(filled) {
+      var row = ctx.el("div", { class: "slots" });
+      for (var i = 0; i < target; i++) row.appendChild(ctx.el("div", { class: "slot" + (i < filled ? " full" : ""), text: i < filled ? emoji : "" }));
+      for (var j = target; j < filled; j++) row.appendChild(ctx.el("div", { class: "slot spill", text: emoji })); // overflow
+      return row;
+    }
+
+    function redraw(filled) {
       card.innerHTML = "";
-      card.appendChild(ctx.el("div", { class: "bubble" }, ctx.pick({ en: "Make exactly ", zh: "做出剛好 " }), ctx.el("b", { text: target + " " + emoji })));
-      card.appendChild(ctx.el("div", { class: "bubble", style: { marginTop: ".8rem" } },
-        ctx.pick({ en: "repeat ", zh: "重複 " }), ctx.el("b", { text: k }), ctx.pick({ en: " times { ", zh: " 次｛ " }), emoji, " }"));
+      card.appendChild(ctx.el("div", { class: "bubble" }, ctx.pick({ en: "Fill all ", zh: "裝滿全部 " }), ctx.el("b", { text: target }), ctx.pick({ en: " jars!", zh: " 個罐子！" })));
+      card.appendChild(slotRow(filled || 0));
+      card.appendChild(ctx.el("div", { class: "bubble", style: { marginTop: ".6rem" } },
+        ctx.pick({ en: "repeat ", zh: "重複 " }), ctx.el("b", { text: n }), ctx.pick({ en: " times { ", zh: " 次 { " }), emoji, " }"));
       card.appendChild(ctx.el("div", { class: "scoreline" },
-        ctx.el("button", { class: "btn", text: "➖", onclick: function () { if (k > 1) { k--; redraw(); } } }),
-        ctx.pick({ en: "  count: ", zh: "  次數：" }), ctx.el("b", { text: k }), "  ",
-        ctx.el("button", { class: "btn", text: "➕", onclick: function () { if (k < 12) { k++; redraw(); } } })));
+        ctx.el("button", { class: "btn", text: "➖", onclick: function () { if (n > 1) { n--; redraw(); } } }),
+        ctx.pick({ en: "  repeat: ", zh: "  重複：" }), ctx.el("b", { text: n }), "  ",
+        ctx.el("button", { class: "btn", text: "➕", onclick: function () { if (n < 12) { n++; redraw(); } } })));
       card.appendChild(ctx.el("div", { class: "btnrow" }, ctx.el("button", { class: "btn primary big", text: ctx.pick({ en: "▶ Run loop", zh: "▶ 執行迴圈" }), onclick: run })));
-      tray.textContent = "";
-      card.appendChild(tray);
-      card.appendChild(ctx.el("p", { class: "hint", id: "fb", text: "" }));
+      card.appendChild(ctx.el("p", { class: "hint", id: "fb", text: ctx.pick({ en: "How many jars are there? Repeat that many times.", zh: "有幾個罐子？就重複幾次。" }) }));
     }
 
     function run() {
-      var i = 0; tray.textContent = "";
+      var i = 0;
       var t = setInterval(function () {
-        if (i >= k) {
+        if (i >= n) {
           clearInterval(t);
-          if (k === target) setTimeout(done, 350);
-          else card.querySelector("#fb").textContent = k > target
-            ? ctx.pick({ en: "Too many! Lower the count.", zh: "太多了！把次數調小。" })
-            : ctx.pick({ en: "Not enough — raise the count.", zh: "不夠 —— 把次數調大。" });
+          if (n === target) { if (FL.sfx) FL.sfx.good(); setTimeout(done, 450); }
+          else card.querySelector("#fb").textContent = n > target
+            ? ctx.pick({ en: "Too many — some spilled! Repeat fewer times.", zh: "太多了 —— 溢出來了！重複少一點。" })
+            : ctx.pick({ en: "Some jars are still empty. Repeat more times.", zh: "還有空罐子。重複多一點。" });
           return;
         }
-        if (FL.sfx) FL.sfx.note(420 + i * 70, 0.16); // pitch climbs as the count grows
-        tray.textContent += emoji; i++;
-        FL.pulse(tray, "anim-pop");
-      }, 200);
+        i++;
+        if (FL.sfx) FL.sfx.note(420 + i * 70, 0.16);
+        var row = card.querySelector(".slots"), nw = slotRow(i);
+        row.parentNode.replaceChild(nw, row);
+        FL.pulse(nw.children[i - 1], "anim-pop");
+      }, 230);
     }
     redraw();
   }

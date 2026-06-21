@@ -1,4 +1,4 @@
-// FUNCTIONS — build a "hop()" function once, then CALL it to reach the apple.
+// FUNCTIONS — teach hop() a few steps, then press Call to run it. Reach the apple.
 (function () {
   var FL = window.FunLab;
 
@@ -9,70 +9,67 @@
 
     tutorial: function (root, ctx) {
       FL.stepper(root, ctx, [
-        { emoji: "📦", title: { en: "A function is a box of steps", zh: "函式是一盒步驟" },
-          body: { en: "Put some steps in a box and give it a name, like <b>hop()</b>. The box remembers them for you.", zh: "把一些步驟放進盒子並取個名字，例如 <b>hop()</b>。盒子會幫你記住它們。" } },
-        { emoji: "📞", title: { en: "Call it!", zh: "呼叫它！" },
-          body: { en: "Saying the name <b>runs all the steps</b>. That's a <b>function call</b>. Call it again to run them again — no need to rewrite!", zh: "說出名字就會<b>執行全部步驟</b>，這叫<b>函式呼叫</b>。再呼叫一次就再跑一遍 —— 不用重寫！" } },
-        { emoji: "🐢", title: { en: "Three apples", zh: "三顆蘋果" },
-          body: { en: "Each stage moves the apple 🍎 further. Build <b>hop()</b> and call it the right number of times to land <b>exactly</b> on it.", zh: "每一關蘋果 🍎 都更遠。做出 <b>hop()</b> 並呼叫剛好的次數，<b>剛好</b>停在上面。" } }
+        { emoji: "📦", title: { en: "A function remembers steps", zh: "函式記住步驟" },
+          body: { en: "Teach <b>hop()</b> a few steps, like <b>➡️➡️</b>. Give it a name once and it remembers — you don't rewrite the steps.", zh: "教 <b>hop()</b> 幾個步驟，例如 <b>➡️➡️</b>。取一次名字它就記住了 —— 你不用再重寫步驟。" } },
+        { emoji: "📞", title: { en: "Press Call to run it", zh: "按呼叫來執行" },
+          body: { en: "Press <b>Call hop()</b> and the turtle does those steps. Press it <b>again</b> to do them again — same function, used many times.", zh: "按 <b>呼叫 hop()</b>，烏龜就做那些步驟。再按一次就再做一遍 —— 同一個函式，用很多次。" } },
+        { emoji: "🍎", title: { en: "Land on the apple", zh: "停在蘋果上" },
+          body: { en: "Pick a hop size, then Call until the turtle lands <b>exactly</b> on 🍎. Too far? Tap <b>Reset</b> and try a different size.", zh: "選一個步數，然後一直呼叫直到烏龜<b>剛好</b>停在 🍎。太遠了？按 <b>重來</b> 換不同的步數。" } }
       ]);
     },
 
     lab: function (root, ctx) {
-      FL.stages(root, ctx, [4, 6, 9].map(function (target) {
-        return function (r, done) { stage(r, ctx, target, done); };
+      FL.stages(root, ctx, [4, 6, 9].map(function (d) {
+        return function (r, done) { stage(r, ctx, d, done); };
       }));
     }
   });
 
-  function stage(root, ctx, TARGET, done) {
-    var body = 1, calls = 1, len = Math.max(TARGET + 2, 9);
+  function stage(root, ctx, D, done) {
+    var body = 1, pos = 0, calls = 0, busy = false, len = D + 4; // room to overshoot
     var card = ctx.el("div", { class: "card center" });
     var track = ctx.el("div", { class: "maze", style: { gridTemplateColumns: "repeat(" + (len + 1) + ", minmax(0,1fr))" } });
     root.appendChild(card);
 
-    function drawTrack(pos) {
+    function drawTrack() {
       track.innerHTML = "";
       for (var i = 0; i <= len; i++) {
-        var face = i === pos ? "🐢" : (i === TARGET ? "🍎" : "");
+        var face = i === pos ? "🐢" : (i === D ? "🍎" : "");
         track.appendChild(ctx.el("div", { class: "cell" + (i === pos && pos > 0 ? " anim-hop" : ""), text: face }));
       }
     }
 
-    function ctrl(label, get, dec, inc, min, max) {
-      return ctx.el("div", { class: "scoreline" },
-        ctx.el("button", { class: "btn", text: "➖", onclick: function () { if (get() > min) { dec(); redraw(); } } }),
-        " " + label + " ", ctx.el("b", { text: String(get()) }), " ",
-        ctx.el("button", { class: "btn", text: "➕", onclick: function () { if (get() < max) { inc(); redraw(); } } })
-      );
-    }
-
     function redraw() {
       card.innerHTML = "";
-      drawTrack(0);
+      drawTrack();
       card.appendChild(track);
       var arrows = ""; for (var k = 0; k < body; k++) arrows += "➡️";
       card.appendChild(ctx.el("div", { class: "bubble" }, ctx.pick({ en: "function ", zh: "函式 " }), ctx.el("b", { text: "hop()" }), " { " + arrows + " }"));
-      card.appendChild(ctrl(ctx.pick({ en: "steps in hop():", zh: "hop() 裡的步數：" }), function () { return body; }, function () { body--; }, function () { body++; }, 1, 4));
-      card.appendChild(ctrl(ctx.pick({ en: "call hop() ×", zh: "呼叫 hop() ×" }), function () { return calls; }, function () { calls--; }, function () { calls++; }, 1, 5));
-      card.appendChild(ctx.el("div", { class: "btnrow" }, ctx.el("button", { class: "btn primary big", text: ctx.pick({ en: "▶ Run", zh: "▶ 執行" }), onclick: run })));
-      card.appendChild(ctx.el("p", { class: "hint", id: "fb", text: ctx.pick({ en: "Land exactly on the apple!", zh: "剛好停在蘋果上！" }) }));
+      card.appendChild(ctx.el("div", { class: "scoreline" },
+        ctx.el("button", { class: "btn", text: "➖", onclick: function () { if (!busy && body > 1) { body--; redraw(); } } }),
+        ctx.pick({ en: "  steps in hop(): ", zh: "  hop() 的步數：" }), ctx.el("b", { text: body }), "  ",
+        ctx.el("button", { class: "btn", text: "➕", onclick: function () { if (!busy && body < 4) { body++; redraw(); } } })));
+      card.appendChild(ctx.el("div", { class: "btnrow" },
+        ctx.el("button", { class: "btn primary big", text: ctx.pick({ en: "📞 Call hop()", zh: "📞 呼叫 hop()" }), onclick: call }),
+        ctx.el("button", { class: "btn", text: ctx.pick({ en: "↺ Reset", zh: "↺ 重來" }), onclick: function () { if (!busy) { pos = 0; calls = 0; redraw(); } } })));
+      card.appendChild(ctx.el("div", { class: "scoreline", text: ctx.pick({ en: "Called hop() ", zh: "呼叫 hop() " }) + calls + ctx.pick({ en: " times", zh: " 次" }) }));
+      card.appendChild(ctx.el("p", { class: "hint", id: "fb", text: ctx.pick({ en: "Press Call hop() to run its steps.", zh: "按「呼叫 hop()」來執行它的步驟。" }) }));
     }
 
-    function run() {
-      var total = body * calls, pos = 0;
-      var fb = card.querySelector("#fb");
-      var timer = setInterval(function () {
-        if (pos >= total) {
-          clearInterval(timer);
-          if (total === TARGET) setTimeout(done, 350);
-          else fb.textContent = total > TARGET
-            ? ctx.pick({ en: "Too far! 🙀 Fewer steps or calls.", zh: "太遠了！🙀 少一點步數或次數。" })
-            : ctx.pick({ en: "Not there yet 🐢 — add more.", zh: "還沒到 🐢 —— 再多一點。" });
+    function call() {
+      if (busy) return;
+      if (pos >= D) { card.querySelector("#fb").textContent = ctx.pick({ en: "Past the apple — tap Reset.", zh: "超過蘋果了 —— 按重來。" }); return; }
+      busy = true; calls++;
+      var done2 = pos + body, fb = card.querySelector("#fb");
+      var t = setInterval(function () {
+        if (pos >= done2) {
+          clearInterval(t); busy = false;
+          if (pos === D) { if (FL.sfx) FL.sfx.good(); setTimeout(done, 450); }
+          else { redraw(); if (pos > D) fb.textContent = ctx.pick({ en: "Too far! Tap Reset and try a smaller hop.", zh: "太遠了！按重來，換小一點的步數。" }); }
           return;
         }
-        pos++; if (FL.sfx) FL.sfx.hop(); drawTrack(pos);
-      }, 280);
+        pos++; if (FL.sfx) FL.sfx.hop(); drawTrack();
+      }, 240);
     }
     redraw();
   }

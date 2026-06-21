@@ -193,6 +193,13 @@ body{
 .cell.path{background:var(--c-functions)}
 .cell.cur{outline:4px solid var(--c-paths);outline-offset:-4px}
 
+/* ---------- loop jars (countable target slots) ---------- */
+.slots{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:1rem 0}
+.slot{width:48px;height:48px;border-radius:50%;border:3px dashed var(--ink);
+  display:flex;align-items:center;justify-content:center;font-size:1.6rem;background:var(--card)}
+.slot.full{border-style:solid;background:#fff7e6}
+.slot.spill{border-style:solid;border-color:#ff4d6d;background:#ffe3e3}
+
 /* ---------- choice buttons ---------- */
 .choices{display:flex;flex-wrap:wrap;gap:.7rem;justify-content:center;margin:1.1rem 0}
 .choice{font-family:var(--display);font-size:1.5rem;font-weight:700;cursor:pointer;
