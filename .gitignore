@@ -8,3 +8,7 @@
 .claude/
 !.agent/memory/
 !.agent/memory/LESSONS.md
+
+# Agent docs (local only, not part of the app)
+GEMINI.md
+CLAUDE.md
