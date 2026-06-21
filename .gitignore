@@ -1,0 +1,10 @@
+
+# Agent Framework (Local Overlay)
+.agent/
+.workspace/
+!.workspace/state/SESSION.md
+!.workspace/state/SCRATCHPAD.md
+.gemini/
+.claude/
+!.agent/memory/
+!.agent/memory/LESSONS.md

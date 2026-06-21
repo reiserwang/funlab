@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fun Lab — Algorithm Experiments</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header id="topbar">
+  <a href="#/" id="brand" aria-label="Fun Lab home">
+    <svg class="brand-flask" viewBox="0 0 40 44" aria-hidden="true">
+      <path d="M14,5 V17 L6,35 a4,4 0 0 0 4,5 H30 a4,4 0 0 0 4,-5 L26,17 V5" fill="#ffb01f" stroke="#1b2440" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M10,5 H30" stroke="#1b2440" stroke-width="3.5" stroke-linecap="round"/>
+      <circle cx="17" cy="30" r="2" fill="#fff" opacity=".7"/>
+      <circle cx="23" cy="34" r="1.4" fill="#fff" opacity=".6"/>
+    </svg>
+    <span class="wm-fun">Fun</span><span class="wm-lab">LAB</span>
+  </a>
+  <div id="topright">
+    <span id="starcount" class="readout" title="specimens collected"></span>
+    <button id="mutebtn" type="button" title="sound on/off" aria-label="sound on/off"></button>
+    <button id="langbtn" type="button"></button>
+  </div>
+</header>
+
+<main id="app"><!-- views render here --></main>
+
+<footer id="foot"></footer>
+
+<!-- plain script tags: works straight from file://, no build, no modules -->
+<script src="i18n.js"></script>
+<script src="app.js"></script>
+<script src="audio.js"></script>
+<script src="topics/sorting.js"></script>
+<script src="topics/conditionals.js"></script>
+<script src="topics/loops.js"></script>
+<script src="topics/functions.js"></script>
+<script src="topics/recursion.js"></script>
+<script src="topics/search.js"></script>
+<script src="topics/stacks.js"></script>
+<script src="topics/trees.js"></script>
+<script src="topics/graphs.js"></script>
+<script src="topics/paths.js"></script>
+<script>FunLab.start();</script>
+</body>
+</html>
